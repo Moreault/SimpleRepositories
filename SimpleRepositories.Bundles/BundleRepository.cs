@@ -44,6 +44,7 @@ public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleReposit
 
         Commit(bundle).Invoke();
         AfterUpdate(list);
+        Reset();
     }
 
     protected virtual void AfterUpdate(IReadOnlyList<TEntity> entities)
@@ -82,6 +83,7 @@ public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleReposit
         }
         Commit(bundle).Invoke();
         AfterInsert(list);
+        Reset();
 
         return output;
     }
@@ -158,6 +160,7 @@ public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleReposit
 
         Commit(bundle).Invoke();
         AfterDelete(list);
+        Reset();
     }
 
     public void TryDeleteMany(params TEntity[] entities)

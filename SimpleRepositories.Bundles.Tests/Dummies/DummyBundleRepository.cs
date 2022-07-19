@@ -32,9 +32,12 @@ public class DummyBundleRepository : BundleRepository<Dummy, DummyBundle>
         }
     };
 
-    private DummyBundle _bundle;
+    private readonly DummyBundle _bundle = new()
+    {
+        Entities = Items.ToList()
+    };
 
-    protected override Func<DummyBundle> Load() => () => _bundle = new DummyBundle { Entities = Items.ToList() };
+    protected override Func<DummyBundle> Load() => () => _bundle;
 
     protected override Action Commit(IList<Dummy> entities)
     {

@@ -26,14 +26,16 @@ public interface IReadOnlyBundleRepository<TEntity> : IReadOnlyRepository<TEntit
 public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBundleRepository<TEntity> where TEntity : IAutoIncrementedId<int> where TBundle : IEntityBundle<TEntity>
 {
     protected internal TBundle Bundle => _bundle.Value;
-    private readonly Lazy<TBundle> _bundle;
+    private Lazy<TBundle> _bundle;
 
     public TEntity this[int id] => FetchById(id);
 
     protected ReadOnlyBundleRepository()
     {
-        _bundle = new Lazy<TBundle>(() => Load().Invoke());
+        Reset();
     }
+
+    protected internal void Reset() => _bundle = new Lazy<TBundle>(() => Load().Invoke());
 
     protected abstract Func<TBundle> Load();
 
