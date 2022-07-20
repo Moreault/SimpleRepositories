@@ -26,7 +26,7 @@ public interface IReadOnlyBundleRepository<TEntity> : IReadOnlyRepository<TEntit
 public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBundleRepository<TEntity> where TEntity : IAutoIncrementedId<int> where TBundle : IEntityBundle<TEntity>
 {
     protected internal TBundle Bundle => _bundle.Value;
-    private Lazy<TBundle> _bundle;
+    private Lazy<TBundle> _bundle = null!;
 
     public TEntity this[int id] => FetchById(id);
 

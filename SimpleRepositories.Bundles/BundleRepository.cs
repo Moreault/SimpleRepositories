@@ -13,9 +13,11 @@ public interface IBundleRepository<TEntity> : IReadOnlyBundleRepository<TEntity>
 
 public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleRepository<TEntity, TBundle>, IBundleRepository<TEntity> where TEntity : IAutoIncrementedId<int> where TBundle : IEntityBundle<TEntity>
 {
-    protected abstract Action Commit(IList<TEntity> entities);
+    protected abstract Action Commit(TBundle bundle);
 
     protected abstract TEntity CreateEntityWithId(TEntity existing, int id);
+
+    protected abstract TBundle CreateBundle(IReadOnlyList<TEntity> entities);
 
     public void Update(TEntity entity)
     {
@@ -42,7 +44,7 @@ public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleReposit
             bundle[existingIndex.Single()] = entity;
         }
 
-        Commit(bundle).Invoke();
+        Commit(CreateBundle(bundle)).Invoke();
         AfterUpdate(list);
         Reset();
     }
@@ -81,7 +83,7 @@ public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleReposit
             bundle.Add(newEntity);
             output.Add(newEntity);
         }
-        Commit(bundle).Invoke();
+        Commit(CreateBundle(bundle)).Invoke();
         AfterInsert(list);
         Reset();
 
@@ -158,7 +160,7 @@ public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleReposit
             bundle.Remove(entity);
         }
 
-        Commit(bundle).Invoke();
+        Commit(CreateBundle(bundle)).Invoke();
         AfterDelete(list);
         Reset();
     }

@@ -32,20 +32,25 @@ public class DummyBundleRepository : BundleRepository<Dummy, DummyBundle>
         }
     };
 
-    private readonly DummyBundle _bundle = new()
+    private DummyBundle _bundle = new()
     {
         Entities = Items.ToList()
     };
 
     protected override Func<DummyBundle> Load() => () => _bundle;
 
-    protected override Action Commit(IList<Dummy> entities)
+    protected override Action Commit(DummyBundle bundle)
     {
-        return () => _bundle.Entities = entities;
+        return () => _bundle = bundle;
     }
 
     protected override Dummy CreateEntityWithId(Dummy existing, int id) => existing with
     {
         Id = id
+    };
+
+    protected override DummyBundle CreateBundle(IReadOnlyList<Dummy> entities) => new DummyBundle
+    {
+        Entities = (IList<Dummy>)entities
     };
 }
