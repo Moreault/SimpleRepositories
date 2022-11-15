@@ -19,6 +19,8 @@ public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleReposit
 
     protected abstract TBundle CreateBundle(IReadOnlyList<TEntity> entities);
 
+    protected abstract int StartingId { get; }
+
     public void Update(TEntity entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
@@ -74,7 +76,7 @@ public abstract class BundleRepository<TEntity, TBundle> : ReadOnlyBundleReposit
         var output = new List<TEntity>();
         foreach (var entity in list)
         {
-            var id = bundle.Cast<IAutoIncrementedId<int>>().ToList().GetNextAvailableId();
+            var id = bundle.GetNextAvailableNumberOrDefault(x => x.Id, StartingId);
             var newEntity = CreateEntityWithId(entity, id);
 
             if (newEntity.Id != id)

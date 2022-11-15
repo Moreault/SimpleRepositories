@@ -32,6 +32,8 @@ public class DummyBundleRepository : BundleRepository<Dummy, DummyBundle>
         }
     };
 
+    protected override int StartingId => 0;
+
     private DummyBundle _bundle = new()
     {
         Entities = Items.ToList()
