@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -31,7 +31,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="ToolBX.OutWarden" Version="2.0.0" />
-		<PackageReference Include="ToolBX.Unicity" Version="2.0.0" />
+		<PackageReference Include="ToolBX.Unicity" Version="2.0.1" />
 	</ItemGroup>
 
 </Project>
