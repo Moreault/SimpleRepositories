@@ -393,7 +393,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch(x => x.Name == "Terry");
 
             //Assert
-            result.Should().Be(new TryGetResult<Dummy>(true, new Dummy
+            result.Should().Be(Result<Dummy>.Success(new Dummy
             {
                 Id = 3,
                 Name = "Terry",
@@ -410,7 +410,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch(x => x.Name == "Seb");
 
             //Assert
-            result.Should().Be(TryGetResult<Dummy>.Failure);
+            result.Should().Be(Result<Dummy>.Failure());
         }
 
         [TestMethod]
@@ -422,7 +422,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch(x => x.Level > 0);
 
             //Assert
-            result.Should().Be(TryGetResult<Dummy>.Failure);
+            result.Should().Be(Result<Dummy>.Failure());
         }
     }
 
@@ -451,7 +451,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch<DerivedDummy>(x => x.Name == "Terry");
 
             //Assert
-            result.Should().Be(TryGetResult<DerivedDummy>.Failure);
+            result.Should().Be(Result<DerivedDummy>.Failure());
         }
 
         [TestMethod]
@@ -463,7 +463,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch<DerivedDummy>(x => x.Level > 0);
 
             //Assert
-            result.Should().Be(TryGetResult<DerivedDummy>.Failure);
+            result.Should().Be(Result<DerivedDummy>.Failure());
         }
 
         [TestMethod]
@@ -475,7 +475,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch<DerivedDummy>(x => x.Name == "Harry");
 
             //Assert
-            result.Should().Be(new TryGetResult<DerivedDummy>(true, new DerivedDummy
+            result.Should().Be(Result<DerivedDummy>.Success(new DerivedDummy
             {
                 Id = 4,
                 Name = "Harry",
@@ -821,7 +821,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchById(id);
 
             //Assert
-            result.Should().Be(TryGetResult<Dummy>.Failure);
+            result.Should().Be(Result<Dummy>.Failure());
         }
 
         [TestMethod]
@@ -834,7 +834,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchById(id);
 
             //Assert
-            result.Should().Be(new TryGetResult<Dummy>(true, new DerivedDummy
+            result.Should().Be(Result<Dummy>.Success(new DerivedDummy
             {
                 Id = 2,
                 Name = "Garry",
@@ -856,7 +856,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchById<DerivedDummy>(1);
 
             //Assert
-            result.Should().Be(TryGetResult<DerivedDummy>.Failure);
+            result.Should().Be(Result<DerivedDummy>.Failure());
         }
 
         [TestMethod]
@@ -868,7 +868,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchById<DerivedDummy>(2);
 
             //Assert
-            result.Should().Be(new TryGetResult<DerivedDummy>(true, new DerivedDummy
+            result.Should().Be(Result<DerivedDummy>.Success(new DerivedDummy
             {
                 Id = 2,
                 Name = "Garry",
@@ -1228,9 +1228,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(3);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Dummy>>
             {
-                new(true, new Dummy
+                Result<Dummy>.Success(new Dummy
                 {
                     Id = 3,
                     Name = "Terry",
@@ -1248,22 +1248,22 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(1, 2, 4);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Dummy>>
             {
-                new(true,new DerivedDummy
+                Result<Dummy>.Success(new DerivedDummy
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 }),
-                new(true, new Dummy
+                Result<Dummy>.Success(new Dummy
                 {
                     Id = 1,
                     Name = "Jerry",
                     Level = 20
                 }),
-                new(true, new DerivedDummy
+                Result<Dummy>.Success(new DerivedDummy
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1282,9 +1282,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(-1, 99, 56);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Dummy>>
             {
-                TryGetResult<Dummy>.Failure, TryGetResult<Dummy>.Failure, TryGetResult<Dummy>.Failure
+                Result<Dummy>.Failure(), Result<Dummy>.Failure(), Result<Dummy>.Failure()
             });
         }
     }
@@ -1315,9 +1315,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Dummy>>
             {
-                new(true, new Dummy
+                Result<Dummy>.Success(new Dummy
                 {
                     Id = 3,
                     Name = "Terry",
@@ -1336,22 +1336,22 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Dummy>>
             {
-                new(true,new DerivedDummy
+                Result<Dummy>.Success(new DerivedDummy
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 }),
-                new(true, new Dummy
+                Result<Dummy>.Success(new Dummy
                 {
                     Id = 1,
                     Name = "Jerry",
                     Level = 20
                 }),
-                new(true, new DerivedDummy
+                Result<Dummy>.Success(new DerivedDummy
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1371,9 +1371,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Dummy>>
             {
-                TryGetResult<Dummy>.Failure, TryGetResult<Dummy>.Failure, TryGetResult<Dummy>.Failure
+                Result<Dummy>.Failure(), Result<Dummy>.Failure(), Result<Dummy>.Failure()
             });
         }
     }
@@ -1402,9 +1402,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById<DerivedDummy>(2);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
             {
-                new(true, new DerivedDummy
+                Result<DerivedDummy>.Success(new DerivedDummy
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1423,16 +1423,16 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById<DerivedDummy>(2, 4);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
             {
-                new(true, new DerivedDummy
+                Result<DerivedDummy>.Success(new DerivedDummy
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 }),
-                new(true, new DerivedDummy
+                Result<DerivedDummy>.Success(new DerivedDummy
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1451,9 +1451,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById<DerivedDummy>(1, 3, 56);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
             {
-                TryGetResult<DerivedDummy>.Failure, TryGetResult<DerivedDummy>.Failure, TryGetResult<DerivedDummy>.Failure
+                Result<DerivedDummy>.Failure(), Result<DerivedDummy>.Failure(), Result<DerivedDummy>.Failure()
             });
         }
     }
@@ -1484,9 +1484,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById<DerivedDummy>(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
             {
-                new(true, new DerivedDummy
+                Result<DerivedDummy>.Success(new DerivedDummy
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1506,16 +1506,16 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById<DerivedDummy>(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
             {
-                new(true, new DerivedDummy
+                Result<DerivedDummy>.Success(new DerivedDummy
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 }),
-                new(true, new DerivedDummy
+                Result<DerivedDummy>.Success(new DerivedDummy
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1535,9 +1535,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById<DerivedDummy>(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<TryGetResult<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
             {
-                TryGetResult<DerivedDummy>.Failure, TryGetResult<DerivedDummy>.Failure, TryGetResult<DerivedDummy>.Failure
+                Result<DerivedDummy>.Failure(), Result<DerivedDummy>.Failure(), Result<DerivedDummy>.Failure()
             });
         }
     }

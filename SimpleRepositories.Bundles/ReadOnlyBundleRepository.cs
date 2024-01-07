@@ -7,8 +7,8 @@ public interface IReadOnlyBundleRepository<TEntity> : IReadOnlyRepository<TEntit
     TEntity FetchById(int id);
     TSubEntity FetchById<TSubEntity>(int id) where TSubEntity : TEntity?;
 
-    TryGetResult<TEntity> TryFetchById(int id);
-    TryGetResult<TSubEntity> TryFetchById<TSubEntity>(int id) where TSubEntity : TEntity?;
+    Result<TEntity> TryFetchById(int id);
+    Result<TSubEntity> TryFetchById<TSubEntity>(int id) where TSubEntity : TEntity?;
 
     IReadOnlyList<TEntity> FetchManyById(params int[] ids);
     IReadOnlyList<TEntity> FetchManyById(IEnumerable<int> ids);
@@ -16,11 +16,11 @@ public interface IReadOnlyBundleRepository<TEntity> : IReadOnlyRepository<TEntit
     IReadOnlyList<TSubEntity> FetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity?;
     IReadOnlyList<TSubEntity> FetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?;
 
-    IReadOnlyList<TryGetResult<TEntity>> TryFetchManyById(params int[] ids);
-    IReadOnlyList<TryGetResult<TEntity>> TryFetchManyById(IEnumerable<int> ids);
+    IReadOnlyList<Result<TEntity>> TryFetchManyById(params int[] ids);
+    IReadOnlyList<Result<TEntity>> TryFetchManyById(IEnumerable<int> ids);
 
-    IReadOnlyList<TryGetResult<TSubEntity>> TryFetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity?;
-    IReadOnlyList<TryGetResult<TSubEntity>> TryFetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?;
+    IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity?;
+    IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?;
 }
 
 public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBundleRepository<TEntity> where TEntity : IAutoIncrementedId<int> where TBundle : IEntityBundle<TEntity>
@@ -71,29 +71,29 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
         return entity;
     }
 
-    public TryGetResult<TEntity> TryFetch(Func<TEntity, bool> predicate)
+    public Result<TEntity> TryFetch(Func<TEntity, bool> predicate)
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate));
         try
         {
-            return new TryGetResult<TEntity>(true, Fetch(predicate));
+            return Result<TEntity>.Success(Fetch(predicate));
         }
         catch
         {
-            return TryGetResult<TEntity>.Failure;
+            return Result<TEntity>.Failure();
         }
     }
 
-    public TryGetResult<TSubEntity> TryFetch<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity?
+    public Result<TSubEntity> TryFetch<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity?
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate));
         try
         {
-            return new TryGetResult<TSubEntity>(true, Fetch(predicate));
+            return Result<TSubEntity>.Success(Fetch(predicate));
         }
         catch
         {
-            return TryGetResult<TSubEntity>.Failure;
+            return Result<TSubEntity>.Failure();
         }
     }
 
@@ -131,27 +131,27 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
         return entity;
     }
 
-    public TryGetResult<TEntity> TryFetchById(int id)
+    public Result<TEntity> TryFetchById(int id)
     {
         try
         {
-            return new TryGetResult<TEntity>(true, FetchById(id));
+            return Result<TEntity>.Success(FetchById(id));
         }
         catch
         {
-            return TryGetResult<TEntity>.Failure;
+            return Result<TEntity>.Failure();
         }
     }
 
-    public TryGetResult<TSubEntity> TryFetchById<TSubEntity>(int id) where TSubEntity : TEntity?
+    public Result<TSubEntity> TryFetchById<TSubEntity>(int id) where TSubEntity : TEntity?
     {
         try
         {
-            return new TryGetResult<TSubEntity>(true, FetchById<TSubEntity>(id));
+            return Result<TSubEntity>.Success(FetchById<TSubEntity>(id));
         }
         catch
         {
-            return TryGetResult<TSubEntity>.Failure;
+            return Result<TSubEntity>.Failure();
         }
     }
 
@@ -174,17 +174,17 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
         return ids.Select(FetchById<TSubEntity>).ToList();
     }
 
-    public IReadOnlyList<TryGetResult<TEntity>> TryFetchManyById(params int[] ids) => TryFetchManyById(ids as IEnumerable<int>);
+    public IReadOnlyList<Result<TEntity>> TryFetchManyById(params int[] ids) => TryFetchManyById(ids as IEnumerable<int>);
 
-    public IReadOnlyList<TryGetResult<TEntity>> TryFetchManyById(IEnumerable<int> ids)
+    public IReadOnlyList<Result<TEntity>> TryFetchManyById(IEnumerable<int> ids)
     {
         if (ids == null) throw new ArgumentNullException(nameof(ids));
         return ids.Select(TryFetchById).ToList();
     }
 
-    public IReadOnlyList<TryGetResult<TSubEntity>> TryFetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity? => TryFetchManyById<TSubEntity>(ids as IEnumerable<int>);
+    public IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity? => TryFetchManyById<TSubEntity>(ids as IEnumerable<int>);
 
-    public IReadOnlyList<TryGetResult<TSubEntity>> TryFetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?
+    public IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?
     {
         if (ids == null) throw new ArgumentNullException(nameof(ids));
         return ids.Select(TryFetchById<TSubEntity>).ToList();
