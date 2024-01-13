@@ -16,8 +16,8 @@ public interface IReadOnlyRepository<TEntity>
     TEntity Fetch(Func<TEntity, bool> predicate);
     TSubEntity Fetch<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity?;
 
-    TryGetResult<TEntity> TryFetch(Func<TEntity, bool> predicate);
-    TryGetResult<TSubEntity> TryFetch<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity?;
+    Result<TEntity> TryFetch(Func<TEntity, bool> predicate);
+    Result<TSubEntity> TryFetch<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity?;
 
     bool Contains(params TEntity[] entities);
     bool Contains(IEnumerable<TEntity> entities);
