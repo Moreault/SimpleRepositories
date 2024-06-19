@@ -1,12 +1,12 @@
-﻿namespace SimpleRepositories.Bundles.Tests.Dummies;
+﻿namespace SimpleRepositories.Bundles.Tests.GarbageTypes;
 
-public class DummyReadOnlyBundleRepository : ReadOnlyBundleRepository<Dummy, DummyBundle>
+public class GarbageReadOnlyBundleRepository : ReadOnlyBundleRepository<Garbage, GarbageBundle>
 {
-    public static readonly DummyBundle Items = new()
+    public static readonly GarbageBundle Items = new()
     {
-        Entities = new List<Dummy>
+        Entities = new List<Garbage>
         {
-            new DerivedDummy
+            new DerivedGarbage
             {
                 Id = 4,
                 Name = "Harry",
@@ -25,7 +25,7 @@ public class DummyReadOnlyBundleRepository : ReadOnlyBundleRepository<Dummy, Dum
                 Name = "Terry",
                 Level = 18
             },
-            new DerivedDummy
+            new DerivedGarbage
             {
                 Id = 2,
                 Name = "Garry",
@@ -35,5 +35,5 @@ public class DummyReadOnlyBundleRepository : ReadOnlyBundleRepository<Dummy, Dum
         }
     };
 
-    protected override Func<DummyBundle> Load() => () => Items;
+    protected override Func<GarbageBundle> Load() => () => Items;
 }

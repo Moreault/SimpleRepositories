@@ -1,16 +1,18 @@
+using SimpleRepositories.Bundles.Tests.GarbageTypes;
+
 namespace SimpleRepositories.Bundles.Tests;
 
 [TestClass]
 public class BundleRepositoryTester
 {
     [TestClass]
-    public class Update : Tester<DummyBundleRepository>
+    public class Update : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenEntityIsNull_Throw()
         {
             //Arrange
-            Dummy entity = null!;
+            Garbage entity = null!;
 
             //Act
             var action = () => Instance.Update(entity);
@@ -23,20 +25,20 @@ public class BundleRepositoryTester
         public void WhenEntityIsNotPartOfRepository_Throw()
         {
             //Arrange
-            var entity = Fixture.Build<Dummy>().With(x => x.Id, DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>()).Create();
+            var entity = Dummy.Build<Garbage>().With(x => x.Id, GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>()).Create();
 
             //Act
             var action = () => Instance.Update(entity);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Dummy), entity.Id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Garbage), entity.Id));
         }
 
         [TestMethod]
         public void WhenEntityAlreadyExistsInRepository_UpdateIt()
         {
             //Arrange
-            var entity = new Dummy
+            var entity = new Garbage
             {
                 Id = 3,
                 Name = "Merry",
@@ -52,7 +54,7 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class UpdateMany_Params : Tester<DummyBundleRepository>
+    public class UpdateMany_Params : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenNoEntityProvided_Throw()
@@ -63,7 +65,7 @@ public class BundleRepositoryTester
             var action = () => Instance.UpdateMany();
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToUpdate, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToUpdate, nameof(Garbage)));
         }
 
         [TestMethod]
@@ -72,30 +74,30 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.UpdateMany(DummyBundleRepository.Items[0] with { Name = "Bogus" }, null!, DummyBundleRepository.Items[1] with { Name = "Not gonna work" });
+            var action = () => Instance.UpdateMany(GarbageBundleRepository.Items[0] with { Name = "Bogus" }, null!, GarbageBundleRepository.Items[1] with { Name = "Not gonna work" });
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.TryingToUpdateNulls, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.TryingToUpdateNulls, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenEntityIsNotPartOfRepository_Throw()
         {
             //Arrange
-            var entity = Fixture.Build<Dummy>().With(x => x.Id, DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>()).Create();
+            var entity = Dummy.Build<Garbage>().With(x => x.Id, GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>()).Create();
 
             //Act
             var action = () => Instance.UpdateMany(entity);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Dummy), entity.Id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Garbage), entity.Id));
         }
 
         [TestMethod]
         public void WhenEntityAlreadyExistsInRepository_UpdateIt()
         {
             //Arrange
-            var entity = new Dummy
+            var entity = new Garbage
             {
                 Id = 3,
                 Name = "Merry",
@@ -113,8 +115,8 @@ public class BundleRepositoryTester
         public void WhenUpdatingManyExistingEntities_UpdateThem()
         {
             //Arrange
-            var entity1 = DummyBundleRepository.Items[1] with { Name = "Not Jerry" };
-            var entity2 = DummyBundleRepository.Items[2] with { Name = "Not Terry" };
+            var entity1 = GarbageBundleRepository.Items[1] with { Name = "Not Jerry" };
+            var entity2 = GarbageBundleRepository.Items[2] with { Name = "Not Terry" };
 
             //Act
             Instance.UpdateMany(entity1, entity2);
@@ -126,13 +128,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class UpdateMany_Enumerable : Tester<DummyBundleRepository>
+    public class UpdateMany_Enumerable : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenEntitiesNull_Throw()
         {
             //Arrange
-            IEnumerable<Dummy> entities = null!;
+            IEnumerable<Garbage> entities = null!;
 
             //Act
             var action = () => Instance.UpdateMany(entities);
@@ -145,53 +147,53 @@ public class BundleRepositoryTester
         public void WhenNoEntityProvided_Throw()
         {
             //Arrange
-            var entities = new List<Dummy>();
+            var entities = new List<Garbage>();
 
             //Act
             var action = () => Instance.UpdateMany(entities);
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToUpdate, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToUpdate, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenContainsNullEntities_Throw()
         {
             //Arrange
-            var entities = new List<Dummy>
+            var entities = new List<Garbage>
             {
-                DummyBundleRepository.Items[0] with {Name = "Bogus"},
+                GarbageBundleRepository.Items[0] with {Name = "Bogus"},
                 null!,
-                DummyBundleRepository.Items[1] with {Name = "Not gonna work"},
+                GarbageBundleRepository.Items[1] with {Name = "Not gonna work"},
             };
 
             //Act
             var action = () => Instance.UpdateMany(entities);
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.TryingToUpdateNulls, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.TryingToUpdateNulls, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenEntityIsNotPartOfRepository_Throw()
         {
             //Arrange
-            var entities = new List<Dummy> { Fixture.Build<Dummy>().With(x => x.Id, DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>()).Create() };
+            var entities = new List<Garbage> { Dummy.Build<Garbage>().With(x => x.Id, GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>()).Create() };
 
             //Act
             var action = () => Instance.UpdateMany(entities);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Dummy), entities.Single().Id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Garbage), entities.Single().Id));
         }
 
         [TestMethod]
         public void WhenEntityAlreadyExistsInRepository_UpdateIt()
         {
             //Arrange
-            var entities = new List<Dummy>
+            var entities = new List<Garbage>
             {
-                new Dummy
+                new Garbage
                 {
                     Id = 3,
                     Name = "Merry",
@@ -210,10 +212,10 @@ public class BundleRepositoryTester
         public void WhenUpdatingManyExistingEntities_UpdateThem()
         {
             //Arrange
-            var entities = new List<Dummy>
+            var entities = new List<Garbage>
             {
-                DummyBundleRepository.Items[1] with { Name = "Not Jerry" },
-                DummyBundleRepository.Items[2] with { Name = "Not Terry" }
+                GarbageBundleRepository.Items[1] with { Name = "Not Jerry" },
+                GarbageBundleRepository.Items[2] with { Name = "Not Terry" }
             };
 
             //Act
@@ -226,13 +228,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class Insert : Tester<DummyBundleRepository>
+    public class Insert : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenEntityIsNull_Throw()
         {
             //Arrange
-            Dummy entity = null!;
+            Garbage entity = null!;
 
             //Act
             var action = () => Instance.Insert(entity);
@@ -245,20 +247,20 @@ public class BundleRepositoryTester
         public void WhenIdIsChangedByAbstractCreateMethod_Throw()
         {
             //Arrange
-            var bogus = new BogusDummyBundleRepository();
+            var bogus = new BogusGarbageBundleRepository();
 
             //Act
-            var action = () => bogus.Insert(Fixture.Create<Dummy>());
+            var action = () => bogus.Insert(Dummy.Create<Garbage>());
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.IdWasChangedBeforeInsert, nameof(Dummy), 5, 4));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.IdWasChangedBeforeInsert, nameof(Garbage), 5, 4));
         }
 
         [TestMethod]
         public void WhenAbstractMethodIsNotBogus_InsertAtEndWithAutoIncrementedId()
         {
             //Arrange
-            var entity = Fixture.Create<Dummy>();
+            var entity = Dummy.Create<Garbage>();
 
             //Act
             Instance.Insert(entity);
@@ -269,7 +271,7 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class InsertMany_Params : Tester<DummyBundleRepository>
+    public class InsertMany_Params : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenNoEntityProvided_Throw()
@@ -280,7 +282,7 @@ public class BundleRepositoryTester
             var action = () => Instance.InsertMany();
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToInsert, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToInsert, nameof(Garbage)));
         }
 
         [TestMethod]
@@ -289,30 +291,30 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.InsertMany(Fixture.Create<Dummy>(), null!, Fixture.Create<Dummy>());
+            var action = () => Instance.InsertMany(Dummy.Create<Garbage>(), null!, Dummy.Create<Garbage>());
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.TryingToInsertNulls, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.TryingToInsertNulls, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenIdIsChangedByAbastractCreateMethod_Throw()
         {
             //Arrange
-            var bogus = new BogusDummyBundleRepository();
+            var bogus = new BogusGarbageBundleRepository();
 
             //Act
-            var action = () => bogus.InsertMany(Fixture.Create<Dummy>(), Fixture.Create<Dummy>());
+            var action = () => bogus.InsertMany(Dummy.Create<Garbage>(), Dummy.Create<Garbage>());
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.IdWasChangedBeforeInsert, nameof(Dummy), 5, 4));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.IdWasChangedBeforeInsert, nameof(Garbage), 5, 4));
         }
 
         [TestMethod]
         public void WhenNoEntityIsNullAndNoIdIsModifiedByAbstractCreateMethod_AddAllByIncrementingId()
         {
             //Arrange
-            var items = Fixture.CreateMany<Dummy>(3).ToArray();
+            var items = Dummy.CreateMany<Garbage>(3).ToArray();
 
             //Act
             Instance.InsertMany(items);
@@ -325,13 +327,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class InsertMany_Enumerable : Tester<DummyBundleRepository>
+    public class InsertMany_Enumerable : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenEntitiesIsNull_Throw()
         {
             //Arrange
-            IEnumerable<Dummy> entities = null!;
+            IEnumerable<Garbage> entities = null!;
 
             //Act
             var action = () => Instance.InsertMany(entities);
@@ -346,44 +348,44 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.InsertMany(new List<Dummy>());
+            var action = () => Instance.InsertMany(new List<Garbage>());
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToInsert, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToInsert, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenOneEntityIsNull_Throw()
         {
             //Arrange
-            var entities = new List<Dummy> { Fixture.Create<Dummy>(), null!, Fixture.Create<Dummy>() };
+            var entities = new List<Garbage> { Dummy.Create<Garbage>(), null!, Dummy.Create<Garbage>() };
 
             //Act
             var action = () => Instance.InsertMany(entities);
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.TryingToInsertNulls, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.TryingToInsertNulls, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenIdIsChangedByAbastractCreateMethod_Throw()
         {
             //Arrange
-            var bogus = new BogusDummyBundleRepository();
-            var entities = new List<Dummy> { Fixture.Create<Dummy>(), Fixture.Create<Dummy>() };
+            var bogus = new BogusGarbageBundleRepository();
+            var entities = new List<Garbage> { Dummy.Create<Garbage>(), Dummy.Create<Garbage>() };
 
             //Act
             var action = () => bogus.InsertMany(entities);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.IdWasChangedBeforeInsert, nameof(Dummy), 5, 4));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.IdWasChangedBeforeInsert, nameof(Garbage), 5, 4));
         }
 
         [TestMethod]
         public void WhenNoEntityIsNullAndNoIdIsModifiedByAbstractCreateMethod_AddAllByIncrementingId()
         {
             //Arrange
-            var items = Fixture.CreateMany<Dummy>(3).ToList();
+            var items = Dummy.CreateMany<Garbage>(3).ToList();
 
             //Act
             Instance.InsertMany(items);
@@ -396,13 +398,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class Delete_Entity : Tester<DummyBundleRepository>
+    public class Delete_Entity : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenEntityIsNull_Throw()
         {
             //Arrange
-            Dummy entity = null!;
+            Garbage entity = null!;
 
             //Act
             var action = () => Instance.Delete(entity);
@@ -415,20 +417,20 @@ public class BundleRepositoryTester
         public void WhenEntityIsNotInRepository_Throw()
         {
             //Arrange
-            var entity = Fixture.Create<Dummy>();
+            var entity = Dummy.Create<Garbage>();
 
             //Act
             var action = () => Instance.Delete(entity);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Dummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenEntityExistsInRepository_RemoveIt()
         {
             //Arrange
-            var item = DummyBundleRepository.Items.GetRandom()!;
+            var item = GarbageBundleRepository.Items.GetRandom()!;
 
             //Act
             Instance.Delete(item);
@@ -439,13 +441,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class Delete_Predicate : Tester<DummyBundleRepository>
+    public class Delete_Predicate : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsNull_Throw()
         {
             //Arrange
-            Func<Dummy, bool> predicate = null!;
+            Func<Garbage, bool> predicate = null!;
 
             //Act
             var action = () => Instance.Delete(predicate);
@@ -463,14 +465,14 @@ public class BundleRepositoryTester
             var action = () => Instance.Delete(x => x.Name.Contains("Kevin"));
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Dummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenPredicateRefersToOneExistingItem_RemoveThatItem()
         {
             //Arrange
-            var item = DummyBundleRepository.Items.GetRandom()!;
+            var item = GarbageBundleRepository.Items.GetRandom()!;
 
             //Act
             Instance.Delete(x => x.Name == item.Name);
@@ -488,16 +490,16 @@ public class BundleRepositoryTester
             Instance.Delete(x => x.Name.Contains("er"));
 
             //Assert
-            Instance.FetchAll().Should().BeEquivalentTo(new List<Dummy>
+            Instance.FetchAll().Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -509,13 +511,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class TryDelete_Entity : Tester<DummyBundleRepository>
+    public class TryDelete_Entity : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenEntityIsNull_Throw()
         {
             //Arrange
-            Dummy entity = null!;
+            Garbage entity = null!;
 
             //Act
             var action = () => Instance.TryDelete(entity);
@@ -528,7 +530,7 @@ public class BundleRepositoryTester
         public void WhenEntityIsNotInRepository_DoNotThrow()
         {
             //Arrange
-            var entity = Fixture.Create<Dummy>();
+            var entity = Dummy.Create<Garbage>();
 
             //Act
             var action = () => Instance.TryDelete(entity);
@@ -541,7 +543,7 @@ public class BundleRepositoryTester
         public void WhenEntityExistsInRepository_RemoveIt()
         {
             //Arrange
-            var item = DummyBundleRepository.Items.GetRandom()!;
+            var item = GarbageBundleRepository.Items.GetRandom()!;
 
             //Act
             Instance.TryDelete(item);
@@ -552,13 +554,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class TryDelete_Predicate : Tester<DummyBundleRepository>
+    public class TryDelete_Predicate : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsNull_Throw()
         {
             //Arrange
-            Func<Dummy, bool> predicate = null!;
+            Func<Garbage, bool> predicate = null!;
 
             //Act
             var action = () => Instance.TryDelete(predicate);
@@ -583,7 +585,7 @@ public class BundleRepositoryTester
         public void WhenPredicateRefersToOneExistingItem_RemoveThatItem()
         {
             //Arrange
-            var item = DummyBundleRepository.Items.GetRandom()!;
+            var item = GarbageBundleRepository.Items.GetRandom()!;
 
             //Act
             Instance.TryDelete(x => x.Name == item.Name);
@@ -601,16 +603,16 @@ public class BundleRepositoryTester
             Instance.TryDelete(x => x.Name.Contains("er"));
 
             //Assert
-            Instance.FetchAll().Should().BeEquivalentTo(new List<Dummy>
+            Instance.FetchAll().Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -622,7 +624,7 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class DeleteMany_Params : Tester<DummyBundleRepository>
+    public class DeleteMany_Params : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenNoEntityProvided_Throw()
@@ -633,7 +635,7 @@ public class BundleRepositoryTester
             var action = () => Instance.DeleteMany();
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToDelete, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToDelete, nameof(Garbage)));
         }
 
         [TestMethod]
@@ -642,31 +644,31 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.DeleteMany(Fixture.Create<Dummy>(), null!, Fixture.Create<DerivedDummy>());
+            var action = () => Instance.DeleteMany(Dummy.Create<Garbage>(), null!, Dummy.Create<DerivedGarbage>());
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteNulls, nameof(Dummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteNulls, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenOneEntityIsNotInRepository_Throw()
         {
             //Arrange
-            var entities = DummyBundleRepository.Items.GetManyRandoms(3).Concat(Fixture.Create<Dummy>()).ToArray();
+            var entities = GarbageBundleRepository.Items.GetManyRandoms(3).Concat(Dummy.Create<Garbage>()).ToArray();
 
             //Act
             var action = () => Instance.DeleteMany(entities);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Dummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenThrowsAfterDeletingExistingElements_DoNotApplyChanges()
         {
             //Arrange
-            var existingEntities = DummyBundleRepository.Items.GetManyRandoms(3).ToList();
-            var entities = existingEntities.Concat(Fixture.Create<Dummy>()).ToArray();
+            var existingEntities = GarbageBundleRepository.Items.GetManyRandoms(3).ToList();
+            var entities = existingEntities.Concat(Dummy.Create<Garbage>()).ToArray();
 
             //Act
             var action = () => Instance.DeleteMany(entities);
@@ -680,7 +682,7 @@ public class BundleRepositoryTester
         public void WhenContainsOneEntityThatIsInRepo_RemoveFromRepo()
         {
             //Arrange
-            var entity = DummyBundleRepository.Items.GetRandom()!;
+            var entity = GarbageBundleRepository.Items.GetRandom()!;
 
             //Act
             Instance.DeleteMany(entity);
@@ -693,7 +695,7 @@ public class BundleRepositoryTester
         public void WhenContainMultipleEntitiesFromRepo_RemoveAllEntities()
         {
             //Arrange
-            var entities = DummyBundleRepository.Items.GetManyRandoms(2).ToArray();
+            var entities = GarbageBundleRepository.Items.GetManyRandoms(2).ToArray();
 
             //Act
             Instance.DeleteMany(entities);
@@ -704,13 +706,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class DeleteMany_Enumerable : Tester<DummyBundleRepository>
+    public class DeleteMany_Enumerable : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenEntitiesNull_Throw()
         {
             //Arrange
-            IEnumerable<Dummy> entities = null!;
+            IEnumerable<Garbage> entities = null!;
 
             //Act
             var action = () => Instance.DeleteMany(entities);
@@ -725,44 +727,44 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.DeleteMany(new List<Dummy>());
+            var action = () => Instance.DeleteMany(new List<Garbage>());
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToDelete, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToDelete, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenContainsNulls_Throw()
         {
             //Arrange
-            var entities = new List<Dummy> { Fixture.Create<Dummy>(), null!, Fixture.Create<DerivedDummy>() };
+            var entities = new List<Garbage> { Dummy.Create<Garbage>(), null!, Dummy.Create<DerivedGarbage>() };
 
             //Act
             var action = () => Instance.DeleteMany(entities);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteNulls, nameof(Dummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteNulls, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenOneEntityIsNotInRepository_Throw()
         {
             //Arrange
-            var entities = DummyBundleRepository.Items.GetManyRandoms(3).Concat(Fixture.Create<Dummy>()).ToList();
+            var entities = GarbageBundleRepository.Items.GetManyRandoms(3).Concat(Dummy.Create<Garbage>()).ToList();
 
             //Act
             var action = () => Instance.DeleteMany(entities);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Dummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenThrowsAfterDeletingExistingElements_DoNotApplyChanges()
         {
             //Arrange
-            var existingEntities = DummyBundleRepository.Items.GetManyRandoms(3).ToList();
-            var entities = existingEntities.Concat(Fixture.Create<Dummy>()).ToList();
+            var existingEntities = GarbageBundleRepository.Items.GetManyRandoms(3).ToList();
+            var entities = existingEntities.Concat(Dummy.Create<Garbage>()).ToList();
 
             //Act
             var action = () => Instance.DeleteMany(entities);
@@ -776,10 +778,10 @@ public class BundleRepositoryTester
         public void WhenContainsOneEntityThatIsInRepo_RemoveFromRepo()
         {
             //Arrange
-            var entity = DummyBundleRepository.Items.GetRandom()!;
+            var entity = GarbageBundleRepository.Items.GetRandom()!;
 
             //Act
-            Instance.DeleteMany(new List<Dummy> { entity });
+            Instance.DeleteMany(new List<Garbage> { entity });
 
             //Assert
             Instance.Contains(entity).Should().BeFalse();
@@ -789,7 +791,7 @@ public class BundleRepositoryTester
         public void WhenContainMultipleEntitiesFromRepo_RemoveAllEntities()
         {
             //Arrange
-            var entities = DummyBundleRepository.Items.GetManyRandoms(2).ToList();
+            var entities = GarbageBundleRepository.Items.GetManyRandoms(2).ToList();
 
             //Act
             Instance.DeleteMany(entities);
@@ -800,7 +802,7 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class TryDeleteMany_Params : Tester<DummyBundleRepository>
+    public class TryDeleteMany_Params : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenNoEntityProvided_Throw()
@@ -811,7 +813,7 @@ public class BundleRepositoryTester
             var action = () => Instance.TryDeleteMany();
 
             //Assert
-            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToDelete, nameof(Dummy)));
+            action.Should().Throw<ArgumentException>().WithMessage(string.Format(Exceptions.NoEntityToDelete, nameof(Garbage)));
         }
 
         [TestMethod]
@@ -820,7 +822,7 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.TryDeleteMany(Fixture.Create<Dummy>(), null!, Fixture.Create<DerivedDummy>());
+            var action = () => Instance.TryDeleteMany(Dummy.Create<Garbage>(), null!, Dummy.Create<DerivedGarbage>());
 
             //Assert
             action.Should().NotThrow();
@@ -830,7 +832,7 @@ public class BundleRepositoryTester
         public void WhenOneEntityIsNotInRepository_Throw()
         {
             //Arrange
-            var entities = DummyBundleRepository.Items.GetManyRandoms(3).Concat(Fixture.Create<Dummy>()).ToArray();
+            var entities = GarbageBundleRepository.Items.GetManyRandoms(3).Concat(Dummy.Create<Garbage>()).ToArray();
 
             //Act
             var action = () => Instance.TryDeleteMany(entities);
@@ -843,8 +845,8 @@ public class BundleRepositoryTester
         public void WhenThrowsAfterDeletingExistingElements_ApplyChangesForExistingEntities()
         {
             //Arrange
-            var existingEntities = DummyBundleRepository.Items.GetManyRandoms(3).ToList();
-            var entities = existingEntities.Concat(Fixture.Create<Dummy>()).ToArray();
+            var existingEntities = GarbageBundleRepository.Items.GetManyRandoms(3).ToList();
+            var entities = existingEntities.Concat(Dummy.Create<Garbage>()).ToArray();
 
             //Act
             Instance.TryDeleteMany(entities);
@@ -857,7 +859,7 @@ public class BundleRepositoryTester
         public void WhenContainsOneEntityThatIsInRepo_RemoveFromRepo()
         {
             //Arrange
-            var entity = DummyBundleRepository.Items.GetRandom()!;
+            var entity = GarbageBundleRepository.Items.GetRandom()!;
 
             //Act
             Instance.TryDeleteMany(entity);
@@ -870,7 +872,7 @@ public class BundleRepositoryTester
         public void WhenContainMultipleEntitiesFromRepo_RemoveAllEntities()
         {
             //Arrange
-            var entities = DummyBundleRepository.Items.GetManyRandoms(2).ToArray();
+            var entities = GarbageBundleRepository.Items.GetManyRandoms(2).ToArray();
 
             //Act
             Instance.TryDeleteMany(entities);
@@ -881,13 +883,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class TryDeleteMany_Enumerable : Tester<DummyBundleRepository>
+    public class TryDeleteMany_Enumerable : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenEntitiesNull_Throw()
         {
             //Arrange
-            IEnumerable<Dummy> entities = null!;
+            IEnumerable<Garbage> entities = null!;
 
             //Act
             var action = () => Instance.TryDeleteMany(entities);
@@ -902,7 +904,7 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.TryDeleteMany(new List<Dummy>());
+            var action = () => Instance.TryDeleteMany(new List<Garbage>());
 
             //Assert
             action.Should().NotThrow();
@@ -912,7 +914,7 @@ public class BundleRepositoryTester
         public void WhenContainsNulls_DoNotThrow()
         {
             //Arrange
-            var entities = new List<Dummy> { Fixture.Create<Dummy>(), null!, Fixture.Create<DerivedDummy>() };
+            var entities = new List<Garbage> { Dummy.Create<Garbage>(), null!, Dummy.Create<DerivedGarbage>() };
 
             //Act
             var action = () => Instance.TryDeleteMany(entities);
@@ -925,7 +927,7 @@ public class BundleRepositoryTester
         public void WhenOneEntityIsNotInRepository_DoNotThrow()
         {
             //Arrange
-            var entities = DummyBundleRepository.Items.GetManyRandoms(3).Concat(Fixture.Create<Dummy>()).ToList();
+            var entities = GarbageBundleRepository.Items.GetManyRandoms(3).Concat(Dummy.Create<Garbage>()).ToList();
 
             //Act
             var action = () => Instance.TryDeleteMany(entities);
@@ -938,8 +940,8 @@ public class BundleRepositoryTester
         public void WhenThrowsAfterDeletingExistingElements_ApplyChangesForExistingEntities()
         {
             //Arrange
-            var existingEntities = DummyBundleRepository.Items.GetManyRandoms(3).ToList();
-            var entities = existingEntities.Concat(Fixture.Create<Dummy>()).ToList();
+            var existingEntities = GarbageBundleRepository.Items.GetManyRandoms(3).ToList();
+            var entities = existingEntities.Concat(Dummy.Create<Garbage>()).ToList();
 
             //Act
             Instance.TryDeleteMany(entities);
@@ -952,10 +954,10 @@ public class BundleRepositoryTester
         public void WhenContainsOneEntityThatIsInRepo_RemoveFromRepo()
         {
             //Arrange
-            var entity = DummyBundleRepository.Items.GetRandom()!;
+            var entity = GarbageBundleRepository.Items.GetRandom()!;
 
             //Act
-            Instance.TryDeleteMany(new List<Dummy> { entity });
+            Instance.TryDeleteMany(new List<Garbage> { entity });
 
             //Assert
             Instance.Contains(entity).Should().BeFalse();
@@ -965,7 +967,7 @@ public class BundleRepositoryTester
         public void WhenContainMultipleEntitiesFromRepo_RemoveAllEntities()
         {
             //Arrange
-            var entities = DummyBundleRepository.Items.GetManyRandoms(2).ToList();
+            var entities = GarbageBundleRepository.Items.GetManyRandoms(2).ToList();
 
             //Act
             Instance.TryDeleteMany(entities);
@@ -976,7 +978,7 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class DeleteById : Tester<DummyBundleRepository>
+    public class DeleteById : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenTryingToDeleteNonExistantId_Throw()
@@ -984,17 +986,17 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.DeleteById(-Fixture.Create<int>());
+            var action = () => Instance.DeleteById(-Dummy.Create<int>());
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Dummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Garbage)));
         }
 
         [TestMethod]
         public void WhenUsingExistingId_RemoveEntityWithId()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.GetRandom()!.Id;
+            var id = GarbageBundleRepository.Items.GetRandom()!.Id;
 
             //Act
             Instance.DeleteById(id);
@@ -1005,33 +1007,33 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class DeleteManyById_Params : Tester<DummyBundleRepository>
+    public class DeleteManyById_Params : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenTryingToDeleteNonExistantId_Throw()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>();
+            var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
 
             //Act
             var action = () => Instance.DeleteManyById(1, 3, id);
 
             //Assert
-            action.Should().Throw<Exception>(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Dummy), id));
+            action.Should().Throw<Exception>(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Garbage), id));
         }
 
         [TestMethod]
         public void WhenThrowing_DoNotUpdateRepository()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>();
+            var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
 
             //Act
             var action = () => Instance.DeleteManyById(1, 3, id);
 
             //Assert
             action.Should().Throw<Exception>();
-            Instance.FetchAll().Should().BeEquivalentTo(DummyBundleRepository.Items);
+            Instance.FetchAll().Should().BeEquivalentTo(GarbageBundleRepository.Items);
         }
 
         [TestMethod]
@@ -1043,7 +1045,7 @@ public class BundleRepositoryTester
             Instance.DeleteManyById(1, 4);
 
             //Assert
-            Instance.FetchAll().Should().BeEquivalentTo(new List<Dummy>
+            Instance.FetchAll().Should().BeEquivalentTo(new List<Garbage>
             {
                 new()
                 {
@@ -1051,7 +1053,7 @@ public class BundleRepositoryTester
                     Name = "Terry",
                     Level = 18
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1063,7 +1065,7 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class DeleteManyById_Enumerable : Tester<DummyBundleRepository>
+    public class DeleteManyById_Enumerable : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenIdsNull_Throw()
@@ -1082,27 +1084,27 @@ public class BundleRepositoryTester
         public void WhenTryingToDeleteNonExistantId_Throw()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>();
+            var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
 
             //Act
             var action = () => Instance.DeleteManyById(new List<int> { 1, 3, id });
 
             //Assert
-            action.Should().Throw<Exception>(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Dummy), id));
+            action.Should().Throw<Exception>(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Garbage), id));
         }
 
         [TestMethod]
         public void WhenThrowing_DoNotUpdateRepository()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>();
+            var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
 
             //Act
             var action = () => Instance.DeleteManyById(new List<int> { 1, 3, id });
 
             //Assert
             action.Should().Throw<Exception>();
-            Instance.FetchAll().Should().BeEquivalentTo(DummyBundleRepository.Items);
+            Instance.FetchAll().Should().BeEquivalentTo(GarbageBundleRepository.Items);
         }
 
         [TestMethod]
@@ -1114,7 +1116,7 @@ public class BundleRepositoryTester
             Instance.DeleteManyById(new List<int> { 1, 4 });
 
             //Assert
-            Instance.FetchAll().Should().BeEquivalentTo(new List<Dummy>
+            Instance.FetchAll().Should().BeEquivalentTo(new List<Garbage>
             {
                 new()
                 {
@@ -1122,7 +1124,7 @@ public class BundleRepositoryTester
                     Name = "Terry",
                     Level = 18
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1134,7 +1136,7 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class TryDeleteById : Tester<DummyBundleRepository>
+    public class TryDeleteById : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenTryingToDeleteNonExistantId_DoNotThrow()
@@ -1142,7 +1144,7 @@ public class BundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.TryDeleteById(-Fixture.Create<int>());
+            var action = () => Instance.TryDeleteById(-Dummy.Create<int>());
 
             //Assert
             action.Should().NotThrow();
@@ -1152,7 +1154,7 @@ public class BundleRepositoryTester
         public void WhenUsingExistingId_RemoveEntityWithId()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.GetRandom()!.Id;
+            var id = GarbageBundleRepository.Items.GetRandom()!.Id;
 
             //Act
             Instance.TryDeleteById(id);
@@ -1163,13 +1165,13 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class TryDeleteManyById_Params : Tester<DummyBundleRepository>
+    public class TryDeleteManyById_Params : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenTryingToDeleteNonExistantId_DoNotThrow()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>();
+            var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
 
             //Act
             var action = () => Instance.TryDeleteManyById(1, 3, id);
@@ -1182,22 +1184,22 @@ public class BundleRepositoryTester
         public void WhenTryingToDeleteNonExistantId_RemoveExistingOnes()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>();
+            var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
 
             //Act
             Instance.TryDeleteManyById(1, 3, id);
 
             //Assert
-            Instance.FetchAll().Should().BeEquivalentTo(new List<Dummy>
+            Instance.FetchAll().Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1216,7 +1218,7 @@ public class BundleRepositoryTester
             Instance.TryDeleteManyById(1, 4);
 
             //Assert
-            Instance.FetchAll().Should().BeEquivalentTo(new List<Dummy>
+            Instance.FetchAll().Should().BeEquivalentTo(new List<Garbage>
             {
                 new()
                 {
@@ -1224,7 +1226,7 @@ public class BundleRepositoryTester
                     Name = "Terry",
                     Level = 18
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1236,7 +1238,7 @@ public class BundleRepositoryTester
     }
 
     [TestClass]
-    public class TryDeleteManyById_Enumerable : Tester<DummyBundleRepository>
+    public class TryDeleteManyById_Enumerable : Tester<GarbageBundleRepository>
     {
         [TestMethod]
         public void WhenIdsNull_Throw()
@@ -1255,7 +1257,7 @@ public class BundleRepositoryTester
         public void WhenTryingToDeleteNonExistantId_DoNotThrow()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>();
+            var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
 
             //Act
             var action = () => Instance.TryDeleteManyById(new List<int> { 1, 3, id });
@@ -1268,22 +1270,22 @@ public class BundleRepositoryTester
         public void WhenTryingToDeleteNonExistantId_RemoveExistingOnes()
         {
             //Arrange
-            var id = DummyBundleRepository.Items.Max(x => x.Id) + Fixture.Create<short>();
+            var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
 
             //Act
             Instance.TryDeleteManyById(new List<int> { 1, 3, id });
 
             //Assert
-            Instance.FetchAll().Should().BeEquivalentTo(new List<Dummy>
+            Instance.FetchAll().Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1302,7 +1304,7 @@ public class BundleRepositoryTester
             Instance.TryDeleteManyById(new List<int> { 1, 4 });
 
             //Assert
-            Instance.FetchAll().Should().BeEquivalentTo(new List<Dummy>
+            Instance.FetchAll().Should().BeEquivalentTo(new List<Garbage>
             {
                 new()
                 {
@@ -1310,7 +1312,7 @@ public class BundleRepositoryTester
                     Name = "Terry",
                     Level = 18
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
