@@ -1,6 +1,6 @@
-﻿namespace SimpleRepositories.Bundles.Tests.Dummies;
+﻿namespace SimpleRepositories.Bundles.Tests.GarbageTypes;
 
-public record Dummy : IAutoIncrementedId<int>
+public record Garbage : IAutoIncrementedId<int>
 {
     public int Id { get; init; }
     public string Name { get; init; } = string.Empty;

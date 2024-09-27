@@ -1,10 +1,12 @@
+using SimpleRepositories.Bundles.Tests.GarbageTypes;
+
 namespace SimpleRepositories.Bundles.Tests;
 
 [TestClass]
 public class ReadOnlyBundleRepositoryTester
 {
     [TestClass]
-    public class Indexer : Tester<DummyReadOnlyBundleRepository>
+    public class Indexer : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoEntityFound_Throw()
@@ -16,7 +18,7 @@ public class ReadOnlyBundleRepositoryTester
             var action = () => Instance[id];
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, typeof(Dummy).GetHumanReadableName(), id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, typeof(Garbage).GetHumanReadableName(), id));
         }
 
         [TestMethod]
@@ -29,7 +31,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance[id];
 
             //Assert
-            result.Should().Be(new Dummy
+            result.Should().Be(new Garbage
             {
                 Id = 1,
                 Name = "Jerry",
@@ -39,7 +41,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Count_Parameterless : Tester<DummyReadOnlyBundleRepository>
+    public class Count_Parameterless : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void Always_ReturnNumberOfItemsInTheEntireBundle()
@@ -55,7 +57,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Count_Predicate : Tester<DummyReadOnlyBundleRepository>
+    public class Count_Predicate : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsEqualToSomething_ReturnCount()
@@ -83,7 +85,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Count_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class Count_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void Always_ReturnAmountOfType()
@@ -91,7 +93,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Count<DerivedDummy>();
+            var result = Instance.Count<DerivedGarbage>();
 
             //Assert
             result.Should().Be(2);
@@ -99,7 +101,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Count_Predicate_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class Count_Predicate_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void Always_ReturnAmountOfTypeThatFitsPredicate()
@@ -107,7 +109,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Count<DerivedDummy>(x => x.Level > 10);
+            var result = Instance.Count<DerivedGarbage>(x => x.Level > 10);
 
             //Assert
             result.Should().Be(1);
@@ -115,7 +117,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class FetchAll_Parameterless : Tester<DummyReadOnlyBundleRepository>
+    public class FetchAll_Parameterless : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void Always_ReturnEveryEntity()
@@ -126,13 +128,13 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.FetchAll();
 
             //Assert
-            result.Should().BeEquivalentTo(DummyReadOnlyBundleRepository.Items.Entities);
-            result.Should().ContainInOrder(DummyReadOnlyBundleRepository.Items.Entities.OrderBy(x => x.Id));
+            result.Should().BeEquivalentTo(GarbageReadOnlyBundleRepository.Items.Entities);
+            result.Should().ContainInOrder(GarbageReadOnlyBundleRepository.Items.Entities.OrderBy(x => x.Id));
         }
     }
 
     [TestClass]
-    public class FetchAll_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class FetchAll_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void Always_ReturnEveryEntity()
@@ -140,10 +142,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.FetchAll<DerivedDummy>();
+            var result = Instance.FetchAll<DerivedGarbage>();
 
             //Assert
-            result.Should().BeEquivalentTo(new List<DerivedDummy>
+            result.Should().BeEquivalentTo(new List<DerivedGarbage>
             {
                 new()
                 {
@@ -164,7 +166,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class FetchAll_Predicate : Tester<DummyReadOnlyBundleRepository>
+    public class FetchAll_Predicate : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNothingFitsPredicate_ReturnEmpty()
@@ -187,9 +189,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.FetchAll(x => x.Name == "Garry");
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Dummy>
+            result.Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -208,7 +210,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.FetchAll(x => x.Name.Contains("er"));
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Dummy>
+            result.Should().BeEquivalentTo(new List<Garbage>
             {
                 new()
                 {
@@ -227,7 +229,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class FetchAll_Predicate_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class FetchAll_Predicate_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void Always_Return()
@@ -235,12 +237,12 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.FetchAll<DerivedDummy>(x => x.Level > 10);
+            var result = Instance.FetchAll<DerivedGarbage>(x => x.Level > 10);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<DerivedDummy>
+            result.Should().BeEquivalentTo(new List<DerivedGarbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -252,13 +254,13 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Fetch_Predicate : Tester<DummyReadOnlyBundleRepository>
+    public class Fetch_Predicate : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsNull_Throw()
         {
             //Arrange
-            Func<Dummy, bool> predicate = null!;
+            Func<Garbage, bool> predicate = null!;
 
             //Act
             var action = () => Instance.Fetch(predicate);
@@ -276,7 +278,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.Fetch(x => x.Name == "Terry");
 
             //Assert
-            result.Should().Be(new Dummy
+            result.Should().Be(new Garbage
             {
                 Id = 3,
                 Name = "Terry",
@@ -293,7 +295,7 @@ public class ReadOnlyBundleRepositoryTester
             var action = () => Instance.Fetch(x => x.Name == "Seb");
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithPredicateNotFound, nameof(Dummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithPredicateNotFound, nameof(Garbage)));
         }
 
         [TestMethod]
@@ -310,16 +312,16 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Fetch_Predicate_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class Fetch_Predicate_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsNull_Throw()
         {
             //Arrange
-            Func<Dummy, bool> predicate = null!;
+            Func<Garbage, bool> predicate = null!;
 
             //Act
-            var action = () => Instance.Fetch<DerivedDummy>(predicate);
+            var action = () => Instance.Fetch<DerivedGarbage>(predicate);
 
             //Assert
             action.Should().Throw<ArgumentNullException>().WithParameterName("predicate");
@@ -331,10 +333,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.Fetch<DerivedDummy>(x => x.Name == "Terry");
+            var action = () => Instance.Fetch<DerivedGarbage>(x => x.Name == "Terry");
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithPredicateNotFound, nameof(DerivedDummy)));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithPredicateNotFound, nameof(DerivedGarbage)));
         }
 
         [TestMethod]
@@ -343,7 +345,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.Fetch<DerivedDummy>(x => x.Level > 0);
+            var action = () => Instance.Fetch<DerivedGarbage>(x => x.Level > 0);
 
             //Assert
             action.Should().Throw<InvalidOperationException>();
@@ -355,10 +357,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Fetch<DerivedDummy>(x => x.Name == "Harry");
+            var result = Instance.Fetch<DerivedGarbage>(x => x.Name == "Harry");
 
             //Assert
-            result.Should().Be(new DerivedDummy
+            result.Should().Be(new DerivedGarbage
             {
                 Id = 4,
                 Name = "Harry",
@@ -369,13 +371,13 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class TryFetch_Predicate : Tester<DummyReadOnlyBundleRepository>
+    public class TryFetch_Predicate : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsNull_Throw()
         {
             //Arrange
-            Func<Dummy, bool> predicate = null!;
+            Func<Garbage, bool> predicate = null!;
 
             //Act
             var action = () => Instance.TryFetch(predicate);
@@ -393,7 +395,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch(x => x.Name == "Terry");
 
             //Assert
-            result.Should().Be(Result<Dummy>.Success(new Dummy
+            result.Should().Be(Result<Garbage>.Success(new Garbage
             {
                 Id = 3,
                 Name = "Terry",
@@ -410,7 +412,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch(x => x.Name == "Seb");
 
             //Assert
-            result.Should().Be(Result<Dummy>.Failure());
+            result.Should().Be(Result<Garbage>.Failure());
         }
 
         [TestMethod]
@@ -422,21 +424,21 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetch(x => x.Level > 0);
 
             //Assert
-            result.Should().Be(Result<Dummy>.Failure());
+            result.Should().Be(Result<Garbage>.Failure());
         }
     }
 
     [TestClass]
-    public class TryFetch_Predicate_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class TryFetch_Predicate_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsNull_Throw()
         {
             //Arrange
-            Func<Dummy, bool> predicate = null!;
+            Func<Garbage, bool> predicate = null!;
 
             //Act
-            var action = () => Instance.TryFetch<DerivedDummy>(predicate);
+            var action = () => Instance.TryFetch<DerivedGarbage>(predicate);
 
             //Assert
             action.Should().Throw<ArgumentNullException>().WithParameterName("predicate");
@@ -448,10 +450,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetch<DerivedDummy>(x => x.Name == "Terry");
+            var result = Instance.TryFetch<DerivedGarbage>(x => x.Name == "Terry");
 
             //Assert
-            result.Should().Be(Result<DerivedDummy>.Failure());
+            result.Should().Be(Result<DerivedGarbage>.Failure());
         }
 
         [TestMethod]
@@ -460,10 +462,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetch<DerivedDummy>(x => x.Level > 0);
+            var result = Instance.TryFetch<DerivedGarbage>(x => x.Level > 0);
 
             //Assert
-            result.Should().Be(Result<DerivedDummy>.Failure());
+            result.Should().Be(Result<DerivedGarbage>.Failure());
         }
 
         [TestMethod]
@@ -472,10 +474,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetch<DerivedDummy>(x => x.Name == "Harry");
+            var result = Instance.TryFetch<DerivedGarbage>(x => x.Name == "Harry");
 
             //Assert
-            result.Should().Be(Result<DerivedDummy>.Success(new DerivedDummy
+            result.Should().Be(Result<DerivedGarbage>.Success(new DerivedGarbage
             {
                 Id = 4,
                 Name = "Harry",
@@ -486,7 +488,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Contains_Params : Tester<DummyReadOnlyBundleRepository>
+    public class Contains_Params : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenAllEntitiesInRepo_ReturnTrue()
@@ -494,7 +496,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!, DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!, DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!);
+            var result = Instance.Contains(GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!, GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!, GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!);
 
             //Assert
             result.Should().BeTrue();
@@ -506,7 +508,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!, Fixture.Create<Dummy>(), DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!);
+            var result = Instance.Contains(GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!, Dummy.Create<Garbage>(), GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!);
 
             //Assert
             result.Should().BeFalse();
@@ -518,7 +520,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(Fixture.Create<Dummy>(), Fixture.Create<Dummy>(), Fixture.Create<Dummy>());
+            var result = Instance.Contains(Dummy.Create<Garbage>(), Dummy.Create<Garbage>(), Dummy.Create<Garbage>());
 
             //Assert
             result.Should().BeFalse();
@@ -530,7 +532,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!);
+            var result = Instance.Contains(GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!);
 
             //Assert
             result.Should().BeTrue();
@@ -542,7 +544,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(Fixture.Create<Dummy>());
+            var result = Instance.Contains(Dummy.Create<Garbage>());
 
             //Assert
             result.Should().BeFalse();
@@ -550,13 +552,13 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Contains_Enumerable : Tester<DummyReadOnlyBundleRepository>
+    public class Contains_Enumerable : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenEntitiesNull_Throw()
         {
             //Arrange
-            IEnumerable<Dummy> entities = null!;
+            IEnumerable<Garbage> entities = null!;
 
             //Act
             var action = () => Instance.Contains(entities);
@@ -571,9 +573,9 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(new List<Dummy>
+            var result = Instance.Contains(new List<Garbage>
             {
-                DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!, DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!, DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!
+                GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!, GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!, GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!
             });
 
             //Assert
@@ -586,9 +588,9 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(new List<Dummy>
+            var result = Instance.Contains(new List<Garbage>
             {
-                DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!, Fixture.Create<Dummy>(), DummyReadOnlyBundleRepository.Items.Entities.GetRandom()!
+                GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!, Dummy.Create<Garbage>(), GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()!
             });
 
             //Assert
@@ -601,7 +603,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(new List<Dummy> { Fixture.Create<Dummy>(), Fixture.Create<Dummy>(), Fixture.Create<Dummy>() });
+            var result = Instance.Contains(new List<Garbage> { Dummy.Create<Garbage>(), Dummy.Create<Garbage>(), Dummy.Create<Garbage>() });
 
             //Assert
             result.Should().BeFalse();
@@ -613,7 +615,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(new List<Dummy> { DummyReadOnlyBundleRepository.Items.Entities.GetRandom()! });
+            var result = Instance.Contains(new List<Garbage> { GarbageReadOnlyBundleRepository.Items.Entities.GetRandom()! });
 
             //Assert
             result.Should().BeTrue();
@@ -625,7 +627,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains(new List<Dummy> { Fixture.Create<Dummy>() });
+            var result = Instance.Contains(new List<Garbage> { Dummy.Create<Garbage>() });
 
             //Assert
             result.Should().BeFalse();
@@ -633,13 +635,13 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Contains_Predicate : Tester<DummyReadOnlyBundleRepository>
+    public class Contains_Predicate : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsNull_Throw()
         {
             //Arrange
-            Func<Dummy, bool> predicate = null!;
+            Func<Garbage, bool> predicate = null!;
 
             //Act
             var action = () => Instance.Contains(predicate);
@@ -686,16 +688,16 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class Contains_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class Contains_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenPredicateIsNull_Throw()
         {
             //Arrange
-            Func<Dummy, bool> predicate = null!;
+            Func<Garbage, bool> predicate = null!;
 
             //Act
-            var action = () => Instance.Contains<DerivedDummy>(predicate);
+            var action = () => Instance.Contains<DerivedGarbage>(predicate);
 
             //Assert
             action.Should().Throw<ArgumentNullException>().WithParameterName("predicate");
@@ -707,7 +709,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains<DerivedDummy>(x => x.Name == "Harry");
+            var result = Instance.Contains<DerivedGarbage>(x => x.Name == "Harry");
 
             //Assert
             result.Should().BeTrue();
@@ -719,7 +721,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains<DerivedDummy>(x => x.Level > 5);
+            var result = Instance.Contains<DerivedGarbage>(x => x.Level > 5);
 
             //Assert
             result.Should().BeTrue();
@@ -731,7 +733,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.Contains<DerivedDummy>(x => x.Name == "Jerry");
+            var result = Instance.Contains<DerivedGarbage>(x => x.Name == "Jerry");
 
             //Assert
             result.Should().BeFalse();
@@ -739,7 +741,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class FetchById : Tester<DummyReadOnlyBundleRepository>
+    public class FetchById : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoEntityFound_Throw()
@@ -751,7 +753,7 @@ public class ReadOnlyBundleRepositoryTester
             var action = () => Instance.FetchById(id);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, typeof(Dummy).GetHumanReadableName(), id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, typeof(Garbage).GetHumanReadableName(), id));
         }
 
         [TestMethod]
@@ -764,7 +766,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.FetchById(id);
 
             //Assert
-            result.Should().Be(new DerivedDummy
+            result.Should().Be(new DerivedGarbage
             {
                 Id = 2,
                 Name = "Garry",
@@ -775,7 +777,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class FetchById_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class FetchById_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenEntityNotFound_Throw()
@@ -783,10 +785,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.FetchById<DerivedDummy>(1);
+            var action = () => Instance.FetchById<DerivedGarbage>(1);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(DerivedDummy), 1));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(DerivedGarbage), 1));
         }
 
         [TestMethod]
@@ -795,10 +797,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.FetchById<DerivedDummy>(2);
+            var result = Instance.FetchById<DerivedGarbage>(2);
 
             //Assert
-            result.Should().Be(new DerivedDummy
+            result.Should().Be(new DerivedGarbage
             {
                 Id = 2,
                 Name = "Garry",
@@ -809,7 +811,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class TryFetchById : Tester<DummyReadOnlyBundleRepository>
+    public class TryFetchById : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoEntityFound_Throw()
@@ -821,7 +823,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchById(id);
 
             //Assert
-            result.Should().Be(Result<Dummy>.Failure());
+            result.Should().Be(Result<Garbage>.Failure());
         }
 
         [TestMethod]
@@ -834,7 +836,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchById(id);
 
             //Assert
-            result.Should().Be(Result<Dummy>.Success(new DerivedDummy
+            result.Should().Be(Result<Garbage>.Success(new DerivedGarbage
             {
                 Id = 2,
                 Name = "Garry",
@@ -845,7 +847,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class TryFetchById_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class TryFetchById_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenEntityNotFound_Throw()
@@ -853,10 +855,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetchById<DerivedDummy>(1);
+            var result = Instance.TryFetchById<DerivedGarbage>(1);
 
             //Assert
-            result.Should().Be(Result<DerivedDummy>.Failure());
+            result.Should().Be(Result<DerivedGarbage>.Failure());
         }
 
         [TestMethod]
@@ -865,10 +867,10 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetchById<DerivedDummy>(2);
+            var result = Instance.TryFetchById<DerivedGarbage>(2);
 
             //Assert
-            result.Should().Be(Result<DerivedDummy>.Success(new DerivedDummy
+            result.Should().Be(Result<DerivedGarbage>.Success(new DerivedGarbage
             {
                 Id = 2,
                 Name = "Garry",
@@ -879,7 +881,7 @@ public class ReadOnlyBundleRepositoryTester
     }
 
     [TestClass]
-    public class FetchManyById_Params : Tester<DummyReadOnlyBundleRepository>
+    public class FetchManyById_Params : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoIdProvided_ReturnEmpty()
@@ -902,7 +904,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.FetchManyById(3);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Dummy>
+            result.Should().BeEquivalentTo(new List<Garbage>
             {
                 new()
                 {
@@ -922,9 +924,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.FetchManyById(1, 2, 4);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Dummy>
+            result.Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
@@ -937,7 +939,7 @@ public class ReadOnlyBundleRepositoryTester
                     Name = "Jerry",
                     Level = 20
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -956,12 +958,12 @@ public class ReadOnlyBundleRepositoryTester
             var action = () => Instance.FetchManyById(-1, 99, 56);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(Dummy), -1));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(Garbage), -1));
         }
     }
 
     [TestClass]
-    public class FetchManyById_Enumerable : Tester<DummyReadOnlyBundleRepository>
+    public class FetchManyById_Enumerable : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenIdsNull_ReturnEmpty()
@@ -986,7 +988,7 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.FetchManyById(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Dummy>
+            result.Should().BeEquivalentTo(new List<Garbage>
             {
                 new()
                 {
@@ -1007,9 +1009,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.FetchManyById(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Dummy>
+            result.Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
@@ -1022,7 +1024,7 @@ public class ReadOnlyBundleRepositoryTester
                     Name = "Jerry",
                     Level = 20
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1042,12 +1044,12 @@ public class ReadOnlyBundleRepositoryTester
             var action = () => Instance.FetchManyById(ids);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(Dummy), -1));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(Garbage), -1));
         }
     }
 
     [TestClass]
-    public class FetchManyById_Params_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class FetchManyById_Params_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoIdProvided_ReturnEmpty()
@@ -1055,7 +1057,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.FetchManyById<DerivedDummy>();
+            var result = Instance.FetchManyById<DerivedGarbage>();
 
             //Assert
             result.Should().BeEmpty();
@@ -1067,12 +1069,12 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.FetchManyById<DerivedDummy>(2);
+            var result = Instance.FetchManyById<DerivedGarbage>(2);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Dummy>
+            result.Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1088,19 +1090,19 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.FetchManyById<DerivedDummy>(2, 4);
+            var result = Instance.FetchManyById<DerivedGarbage>(2, 4);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<DerivedDummy>
+            result.Should().BeEquivalentTo(new List<DerivedGarbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1116,15 +1118,15 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var action = () => Instance.FetchManyById<DerivedDummy>(1, 3, 56);
+            var action = () => Instance.FetchManyById<DerivedGarbage>(1, 3, 56);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(DerivedDummy), 1));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(DerivedGarbage), 1));
         }
     }
 
     [TestClass]
-    public class FetchManyById_Enumerable_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class FetchManyById_Enumerable_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoIdProvided_Throw()
@@ -1133,7 +1135,7 @@ public class ReadOnlyBundleRepositoryTester
             IEnumerable<int> ids = null!;
 
             //Act
-            var action = () => Instance.FetchManyById<DerivedDummy>(ids);
+            var action = () => Instance.FetchManyById<DerivedGarbage>(ids);
 
             //Assert
             action.Should().Throw<ArgumentNullException>().WithParameterName("ids");
@@ -1146,12 +1148,12 @@ public class ReadOnlyBundleRepositoryTester
             var ids = new List<int> { 2 };
 
             //Act
-            var result = Instance.FetchManyById<DerivedDummy>(ids);
+            var result = Instance.FetchManyById<DerivedGarbage>(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Dummy>
+            result.Should().BeEquivalentTo(new List<Garbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1168,19 +1170,19 @@ public class ReadOnlyBundleRepositoryTester
             var ids = new List<int> { 2, 4 };
 
             //Act
-            var result = Instance.FetchManyById<DerivedDummy>(ids);
+            var result = Instance.FetchManyById<DerivedGarbage>(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<DerivedDummy>
+            result.Should().BeEquivalentTo(new List<DerivedGarbage>
             {
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 },
-                new DerivedDummy
+                new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1197,15 +1199,15 @@ public class ReadOnlyBundleRepositoryTester
             var ids = new List<int> { 1, 3, 56 };
 
             //Act
-            var action = () => Instance.FetchManyById<DerivedDummy>(ids);
+            var action = () => Instance.FetchManyById<DerivedGarbage>(ids);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(DerivedDummy), 1));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(DerivedGarbage), 1));
         }
     }
 
     [TestClass]
-    public class TryFetchManyById_Params : Tester<DummyReadOnlyBundleRepository>
+    public class TryFetchManyById_Params : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoIdProvided_ReturnEmpty()
@@ -1228,9 +1230,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(3);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Garbage>>
             {
-                Result<Dummy>.Success(new Dummy
+                Result<Garbage>.Success(new Garbage
                 {
                     Id = 3,
                     Name = "Terry",
@@ -1248,22 +1250,22 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(1, 2, 4);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Garbage>>
             {
-                Result<Dummy>.Success(new DerivedDummy
+                Result<Garbage>.Success(new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 }),
-                Result<Dummy>.Success(new Dummy
+                Result<Garbage>.Success(new Garbage
                 {
                     Id = 1,
                     Name = "Jerry",
                     Level = 20
                 }),
-                Result<Dummy>.Success(new DerivedDummy
+                Result<Garbage>.Success(new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1282,15 +1284,15 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(-1, 99, 56);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Garbage>>
             {
-                Result<Dummy>.Failure(), Result<Dummy>.Failure(), Result<Dummy>.Failure()
+                Result<Garbage>.Failure(), Result<Garbage>.Failure(), Result<Garbage>.Failure()
             });
         }
     }
 
     [TestClass]
-    public class TryFetchManyById_Enumerable : Tester<DummyReadOnlyBundleRepository>
+    public class TryFetchManyById_Enumerable : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoIdProvided_Throw()
@@ -1315,9 +1317,9 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Garbage>>
             {
-                Result<Dummy>.Success(new Dummy
+                Result<Garbage>.Success(new Garbage
                 {
                     Id = 3,
                     Name = "Terry",
@@ -1336,22 +1338,22 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Garbage>>
             {
-                Result<Dummy>.Success(new DerivedDummy
+                Result<Garbage>.Success(new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 }),
-                Result<Dummy>.Success(new Dummy
+                Result<Garbage>.Success(new Garbage
                 {
                     Id = 1,
                     Name = "Jerry",
                     Level = 20
                 }),
-                Result<Dummy>.Success(new DerivedDummy
+                Result<Garbage>.Success(new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1371,15 +1373,15 @@ public class ReadOnlyBundleRepositoryTester
             var result = Instance.TryFetchManyById(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<Dummy>>
+            result.Should().BeEquivalentTo(new List<Result<Garbage>>
             {
-                Result<Dummy>.Failure(), Result<Dummy>.Failure(), Result<Dummy>.Failure()
+                Result<Garbage>.Failure(), Result<Garbage>.Failure(), Result<Garbage>.Failure()
             });
         }
     }
 
     [TestClass]
-    public class TryFetchManyById_Params_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class TryFetchManyById_Params_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoIdProvided_ReturnEmpty()
@@ -1387,7 +1389,7 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetchManyById<DerivedDummy>();
+            var result = Instance.TryFetchManyById<DerivedGarbage>();
 
             //Assert
             result.Should().BeEmpty();
@@ -1399,12 +1401,12 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetchManyById<DerivedDummy>(2);
+            var result = Instance.TryFetchManyById<DerivedGarbage>(2);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedGarbage>>
             {
-                Result<DerivedDummy>.Success(new DerivedDummy
+                Result<DerivedGarbage>.Success(new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1420,19 +1422,19 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetchManyById<DerivedDummy>(2, 4);
+            var result = Instance.TryFetchManyById<DerivedGarbage>(2, 4);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedGarbage>>
             {
-                Result<DerivedDummy>.Success(new DerivedDummy
+                Result<DerivedGarbage>.Success(new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 }),
-                Result<DerivedDummy>.Success(new DerivedDummy
+                Result<DerivedGarbage>.Success(new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1448,18 +1450,18 @@ public class ReadOnlyBundleRepositoryTester
             //Arrange
 
             //Act
-            var result = Instance.TryFetchManyById<DerivedDummy>(1, 3, 56);
+            var result = Instance.TryFetchManyById<DerivedGarbage>(1, 3, 56);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedGarbage>>
             {
-                Result<DerivedDummy>.Failure(), Result<DerivedDummy>.Failure(), Result<DerivedDummy>.Failure()
+                Result<DerivedGarbage>.Failure(), Result<DerivedGarbage>.Failure(), Result<DerivedGarbage>.Failure()
             });
         }
     }
 
     [TestClass]
-    public class TryFetchManyById_Enumerable_SubEntity : Tester<DummyReadOnlyBundleRepository>
+    public class TryFetchManyById_Enumerable_SubEntity : Tester<GarbageReadOnlyBundleRepository>
     {
         [TestMethod]
         public void WhenNoIdProvided_Throw()
@@ -1468,7 +1470,7 @@ public class ReadOnlyBundleRepositoryTester
             IEnumerable<int> ids = null!;
 
             //Act
-            var action = () => Instance.TryFetchManyById<DerivedDummy>(ids);
+            var action = () => Instance.TryFetchManyById<DerivedGarbage>(ids);
 
             //Assert
             action.Should().Throw<ArgumentNullException>().WithParameterName("ids");
@@ -1481,12 +1483,12 @@ public class ReadOnlyBundleRepositoryTester
             var ids = new List<int> { 2 };
 
             //Act
-            var result = Instance.TryFetchManyById<DerivedDummy>(ids);
+            var result = Instance.TryFetchManyById<DerivedGarbage>(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedGarbage>>
             {
-                Result<DerivedDummy>.Success(new DerivedDummy
+                Result<DerivedGarbage>.Success(new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1503,19 +1505,19 @@ public class ReadOnlyBundleRepositoryTester
             var ids = new List<int> { 2, 4 };
 
             //Act
-            var result = Instance.TryFetchManyById<DerivedDummy>(ids);
+            var result = Instance.TryFetchManyById<DerivedGarbage>(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedGarbage>>
             {
-                Result<DerivedDummy>.Success(new DerivedDummy
+                Result<DerivedGarbage>.Success(new DerivedGarbage
                 {
                     Id = 4,
                     Name = "Harry",
                     Level = 7,
                     Job = "That guy over there"
                 }),
-                Result<DerivedDummy>.Success(new DerivedDummy
+                Result<DerivedGarbage>.Success(new DerivedGarbage
                 {
                     Id = 2,
                     Name = "Garry",
@@ -1532,12 +1534,12 @@ public class ReadOnlyBundleRepositoryTester
             var ids = new List<int> { 1, 3, 56 };
 
             //Act
-            var result = Instance.TryFetchManyById<DerivedDummy>(ids);
+            var result = Instance.TryFetchManyById<DerivedGarbage>(ids);
 
             //Assert
-            result.Should().BeEquivalentTo(new List<Result<DerivedDummy>>
+            result.Should().BeEquivalentTo(new List<Result<DerivedGarbage>>
             {
-                Result<DerivedDummy>.Failure(), Result<DerivedDummy>.Failure(), Result<DerivedDummy>.Failure()
+                Result<DerivedGarbage>.Failure(), Result<DerivedGarbage>.Failure(), Result<DerivedGarbage>.Failure()
             });
         }
     }
