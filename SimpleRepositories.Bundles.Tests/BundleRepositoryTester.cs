@@ -1,5 +1,3 @@
-using SimpleRepositories.Bundles.Tests.GarbageTypes;
-
 namespace SimpleRepositories.Bundles.Tests;
 
 [TestClass]
@@ -1010,7 +1008,7 @@ public class BundleRepositoryTester
     public class DeleteManyById_Params : Tester<GarbageBundleRepository>
     {
         [TestMethod]
-        public void WhenTryingToDeleteNonExistantId_Throw()
+        public void WhenTryingToDeleteNonExistentId_Throw()
         {
             //Arrange
             var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
@@ -1019,7 +1017,7 @@ public class BundleRepositoryTester
             var action = () => Instance.DeleteManyById(1, 3, id);
 
             //Assert
-            action.Should().Throw<Exception>(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Garbage), id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Garbage), id));
         }
 
         [TestMethod]
@@ -1081,7 +1079,7 @@ public class BundleRepositoryTester
         }
 
         [TestMethod]
-        public void WhenTryingToDeleteNonExistantId_Throw()
+        public void WhenTryingToDeleteNonExistentId_Throw()
         {
             //Arrange
             var id = GarbageBundleRepository.Items.Max(x => x.Id) + Dummy.Create<short>();
@@ -1090,7 +1088,7 @@ public class BundleRepositoryTester
             var action = () => Instance.DeleteManyById(new List<int> { 1, 3, id });
 
             //Assert
-            action.Should().Throw<Exception>(string.Format(Exceptions.NoEntityFoundToUpdate, nameof(Garbage), id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.TryingToDeleteInexistantEntities, nameof(Garbage), id));
         }
 
         [TestMethod]

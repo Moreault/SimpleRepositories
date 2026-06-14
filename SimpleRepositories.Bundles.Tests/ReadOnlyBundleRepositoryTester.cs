@@ -1,5 +1,3 @@
-using SimpleRepositories.Bundles.Tests.GarbageTypes;
-
 namespace SimpleRepositories.Bundles.Tests;
 
 [TestClass]

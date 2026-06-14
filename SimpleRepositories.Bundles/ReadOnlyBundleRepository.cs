@@ -25,8 +25,23 @@ public interface IReadOnlyBundleRepository<TEntity> : IReadOnlyRepository<TEntit
 
 public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBundleRepository<TEntity> where TEntity : IAutoIncrementedId<int> where TBundle : IEntityBundle<TEntity>
 {
-    protected internal TBundle Bundle => _bundle.Value;
-    private Lazy<TBundle> _bundle = null!;
+    protected internal TBundle Bundle
+    {
+        get
+        {
+            if (!_isBundleLoaded)
+                lock (_bundleLock)
+                    if (!_isBundleLoaded)
+                    {
+                        _bundle = Load().Invoke();
+                        _isBundleLoaded = true;
+                    }
+            return _bundle;
+        }
+    }
+    private TBundle _bundle = default!;
+    private bool _isBundleLoaded;
+    private readonly object _bundleLock = new();
 
     public TEntity this[int id] => FetchById(id);
 
@@ -35,7 +50,14 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
         Reset();
     }
 
-    protected internal void Reset() => _bundle = new Lazy<TBundle>(() => Load().Invoke());
+    protected internal void Reset()
+    {
+        lock (_bundleLock)
+        {
+            _bundle = default!;
+            _isBundleLoaded = false;
+        }
+    }
 
     protected abstract Func<TBundle> Load();
 
