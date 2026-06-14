@@ -4,23 +4,23 @@ public interface IReadOnlyBundleRepository<TEntity> : IReadOnlyRepository<TEntit
 {
     TEntity this[int id] { get; }
 
-    TEntity FetchById(int id);
-    TSubEntity FetchById<TSubEntity>(int id) where TSubEntity : TEntity?;
+    TEntity FetchById(int id, params Include[] includes);
+    TSubEntity FetchById<TSubEntity>(int id, params Include[] includes) where TSubEntity : TEntity?;
 
-    Result<TEntity> TryFetchById(int id);
-    Result<TSubEntity> TryFetchById<TSubEntity>(int id) where TSubEntity : TEntity?;
+    Result<TEntity> TryFetchById(int id, params Include[] includes);
+    Result<TSubEntity> TryFetchById<TSubEntity>(int id, params Include[] includes) where TSubEntity : TEntity?;
 
     IReadOnlyList<TEntity> FetchManyById(params int[] ids);
-    IReadOnlyList<TEntity> FetchManyById(IEnumerable<int> ids);
+    IReadOnlyList<TEntity> FetchManyById(IEnumerable<int> ids, params Include[] includes);
 
     IReadOnlyList<TSubEntity> FetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity?;
-    IReadOnlyList<TSubEntity> FetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?;
+    IReadOnlyList<TSubEntity> FetchManyById<TSubEntity>(IEnumerable<int> ids, params Include[] includes) where TSubEntity : TEntity?;
 
     IReadOnlyList<Result<TEntity>> TryFetchManyById(params int[] ids);
-    IReadOnlyList<Result<TEntity>> TryFetchManyById(IEnumerable<int> ids);
+    IReadOnlyList<Result<TEntity>> TryFetchManyById(IEnumerable<int> ids, params Include[] includes);
 
     IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity?;
-    IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?;
+    IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(IEnumerable<int> ids, params Include[] includes) where TSubEntity : TEntity?;
 }
 
 public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBundleRepository<TEntity> where TEntity : IAutoIncrementedId<int> where TBundle : IEntityBundle<TEntity>
@@ -61,6 +61,30 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
 
     protected abstract Func<TBundle> Load();
 
+    /// <summary>
+    /// Populates optional, derived values on a freshly fetched entity. The default implementation does nothing,
+    /// so includes are entirely opt-in : an entity is only enriched when the caller requests it and a derived
+    /// repository overrides this method. Override it to resolve foreign keys into navigation values
+    /// (for example, set <c>Name</c> from <c>NameId</c> when <paramref name="includes"/> contains <see cref="Include.Name"/>).
+    /// </summary>
+    /// <remarks>This runs after every fetch and is expected to mutate <paramref name="entity"/> in place.</remarks>
+    protected virtual void ApplyIncludes(TEntity entity, IReadOnlyList<Include> includes) { }
+
+    private TResult Materialize<TResult>(TResult entity, Include[] includes) where TResult : TEntity?
+    {
+        if (includes.Length > 0 && entity is not null) ApplyIncludes(entity, includes);
+        return entity;
+    }
+
+    private IReadOnlyList<TResult> MaterializeAll<TResult>(IReadOnlyList<TResult> entities, Include[] includes) where TResult : TEntity?
+    {
+        if (includes.Length > 0)
+            foreach (var entity in entities)
+                if (entity is not null)
+                    ApplyIncludes(entity, includes);
+        return entities;
+    }
+
     public int Count() => Bundle.Entities.Count;
 
     public int Count(Func<TEntity, bool> predicate) => Bundle.Entities.Count(predicate);
@@ -69,36 +93,36 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
 
     public int Count<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity? => Bundle.Entities.OfType<TSubEntity>().Count(predicate);
 
-    public IReadOnlyList<TEntity> FetchAll() => Bundle.Entities.OrderBy(x => x.Id).ToList();
+    public IReadOnlyList<TEntity> FetchAll(params Include[] includes) => MaterializeAll(Bundle.Entities.OrderBy(x => x.Id).ToList(), includes);
 
-    public IReadOnlyList<TSubEntity> FetchAll<TSubEntity>() where TSubEntity : TEntity? => Bundle.Entities.OfType<TSubEntity>().OrderBy(x => x!.Id).ToList();
+    public IReadOnlyList<TSubEntity> FetchAll<TSubEntity>(params Include[] includes) where TSubEntity : TEntity? => MaterializeAll(Bundle.Entities.OfType<TSubEntity>().OrderBy(x => x!.Id).ToList(), includes);
 
-    public IReadOnlyList<TEntity> FetchAll(Func<TEntity, bool> predicate) => Bundle.Entities.Where(predicate).ToList();
+    public IReadOnlyList<TEntity> FetchAll(Func<TEntity, bool> predicate, params Include[] includes) => MaterializeAll(Bundle.Entities.Where(predicate).ToList(), includes);
 
-    public IReadOnlyList<TSubEntity> FetchAll<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity? => Bundle.Entities.OfType<TSubEntity>().Where(predicate).ToList();
+    public IReadOnlyList<TSubEntity> FetchAll<TSubEntity>(Func<TSubEntity, bool> predicate, params Include[] includes) where TSubEntity : TEntity? => MaterializeAll(Bundle.Entities.OfType<TSubEntity>().Where(predicate).ToList(), includes);
 
-    public TEntity Fetch(Func<TEntity, bool> predicate)
+    public TEntity Fetch(Func<TEntity, bool> predicate, params Include[] includes)
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate));
         var entity = Bundle.Entities.SingleOrDefault(predicate);
         if (entity == null) throw new Exception(string.Format(Exceptions.EntityWithPredicateNotFound, typeof(TEntity).GetHumanReadableName()));
-        return entity;
+        return Materialize(entity, includes);
     }
 
-    public TSubEntity Fetch<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity?
+    public TSubEntity Fetch<TSubEntity>(Func<TSubEntity, bool> predicate, params Include[] includes) where TSubEntity : TEntity?
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate));
         var entity = Bundle.Entities.OfType<TSubEntity>().SingleOrDefault(predicate);
         if (entity == null) throw new Exception(string.Format(Exceptions.EntityWithPredicateNotFound, typeof(TSubEntity).GetHumanReadableName()));
-        return entity;
+        return Materialize(entity, includes);
     }
 
-    public Result<TEntity> TryFetch(Func<TEntity, bool> predicate)
+    public Result<TEntity> TryFetch(Func<TEntity, bool> predicate, params Include[] includes)
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate));
         try
         {
-            return Result<TEntity>.Success(Fetch(predicate));
+            return Result<TEntity>.Success(Fetch(predicate, includes));
         }
         catch
         {
@@ -106,12 +130,12 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
         }
     }
 
-    public Result<TSubEntity> TryFetch<TSubEntity>(Func<TSubEntity, bool> predicate) where TSubEntity : TEntity?
+    public Result<TSubEntity> TryFetch<TSubEntity>(Func<TSubEntity, bool> predicate, params Include[] includes) where TSubEntity : TEntity?
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate));
         try
         {
-            return Result<TSubEntity>.Success(Fetch(predicate));
+            return Result<TSubEntity>.Success(Fetch(predicate, includes));
         }
         catch
         {
@@ -139,25 +163,25 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
         return Bundle.Entities.OfType<TSubEntity>().Any(predicate);
     }
 
-    public TEntity FetchById(int id)
+    public TEntity FetchById(int id, params Include[] includes)
     {
         var entity = Bundle.Entities.SingleOrDefault(x => x.Id == id);
         if (entity == null) throw new Exception(string.Format(Exceptions.EntityWithIdNotFound, typeof(TEntity).GetHumanReadableName(), id));
-        return entity;
+        return Materialize(entity, includes);
     }
 
-    public TSubEntity FetchById<TSubEntity>(int id) where TSubEntity : TEntity?
+    public TSubEntity FetchById<TSubEntity>(int id, params Include[] includes) where TSubEntity : TEntity?
     {
         var entity = Bundle.Entities.OfType<TSubEntity>().SingleOrDefault(x => x!.Id == id);
         if (entity == null) throw new Exception(string.Format(Exceptions.EntityWithIdNotFound, typeof(TSubEntity).GetHumanReadableName(), id));
-        return entity;
+        return Materialize(entity, includes);
     }
 
-    public Result<TEntity> TryFetchById(int id)
+    public Result<TEntity> TryFetchById(int id, params Include[] includes)
     {
         try
         {
-            return Result<TEntity>.Success(FetchById(id));
+            return Result<TEntity>.Success(FetchById(id, includes));
         }
         catch
         {
@@ -165,11 +189,11 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
         }
     }
 
-    public Result<TSubEntity> TryFetchById<TSubEntity>(int id) where TSubEntity : TEntity?
+    public Result<TSubEntity> TryFetchById<TSubEntity>(int id, params Include[] includes) where TSubEntity : TEntity?
     {
         try
         {
-            return Result<TSubEntity>.Success(FetchById<TSubEntity>(id));
+            return Result<TSubEntity>.Success(FetchById<TSubEntity>(id, includes));
         }
         catch
         {
@@ -179,10 +203,10 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
 
     public IReadOnlyList<TEntity> FetchManyById(params int[] ids) => FetchManyById(ids as IEnumerable<int>);
 
-    public IReadOnlyList<TEntity> FetchManyById(IEnumerable<int> ids)
+    public IReadOnlyList<TEntity> FetchManyById(IEnumerable<int> ids, params Include[] includes)
     {
         if (ids == null) throw new ArgumentNullException(nameof(ids));
-        return ids.Select(FetchById).ToList();
+        return ids.Select(id => FetchById(id, includes)).ToList();
     }
 
     public IReadOnlyList<TSubEntity> FetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity?
@@ -190,25 +214,25 @@ public abstract class ReadOnlyBundleRepository<TEntity, TBundle> : IReadOnlyBund
         return FetchManyById<TSubEntity>(ids as IEnumerable<int>);
     }
 
-    public IReadOnlyList<TSubEntity> FetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?
+    public IReadOnlyList<TSubEntity> FetchManyById<TSubEntity>(IEnumerable<int> ids, params Include[] includes) where TSubEntity : TEntity?
     {
         if (ids == null) throw new ArgumentNullException(nameof(ids));
-        return ids.Select(FetchById<TSubEntity>).ToList();
+        return ids.Select(id => FetchById<TSubEntity>(id, includes)).ToList();
     }
 
     public IReadOnlyList<Result<TEntity>> TryFetchManyById(params int[] ids) => TryFetchManyById(ids as IEnumerable<int>);
 
-    public IReadOnlyList<Result<TEntity>> TryFetchManyById(IEnumerable<int> ids)
+    public IReadOnlyList<Result<TEntity>> TryFetchManyById(IEnumerable<int> ids, params Include[] includes)
     {
         if (ids == null) throw new ArgumentNullException(nameof(ids));
-        return ids.Select(TryFetchById).ToList();
+        return ids.Select(id => TryFetchById(id, includes)).ToList();
     }
 
     public IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(params int[] ids) where TSubEntity : TEntity? => TryFetchManyById<TSubEntity>(ids as IEnumerable<int>);
 
-    public IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(IEnumerable<int> ids) where TSubEntity : TEntity?
+    public IReadOnlyList<Result<TSubEntity>> TryFetchManyById<TSubEntity>(IEnumerable<int> ids, params Include[] includes) where TSubEntity : TEntity?
     {
         if (ids == null) throw new ArgumentNullException(nameof(ids));
-        return ids.Select(TryFetchById<TSubEntity>).ToList();
+        return ids.Select(id => TryFetchById<TSubEntity>(id, includes)).ToList();
     }
 }

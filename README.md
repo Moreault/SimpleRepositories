@@ -28,3 +28,43 @@ public class MyBundleRepository : BundleRepository<MyEntity>
 ```
 
 With this, your items will be assigned IDs starting at 1 instead of 0.
+
+### Includes
+
+Entities often store foreign keys (such as a `NameId` or `DescriptionId` pointing into a localization table) rather than the resolved value itself. Includes let a repository optionally populate those derived values when you fetch, similar in spirit to EF Core's `Include` but deliberately lightweight and AOT-friendly: there are no expression trees or runtime reflection involved.
+
+Includes are entirely opt-in. Fetched entities are only enriched when the caller asks for it *and* the repository knows how to resolve it by overriding `ApplyIncludes`. If you request an include a repository doesn't handle, it's simply ignored.
+
+```cs
+public class ItemRepository : BundleRepository<Item, ItemBundle>
+{
+    private readonly ITextRepository _text;
+
+    public ItemRepository(ITextRepository text) => _text = text;
+
+    protected override void ApplyIncludes(Item entity, IReadOnlyList<Include> includes)
+    {
+        if (includes.Contains(Include.Name))
+            entity.Name = _text.Fetch(entity.NameId);
+        if (includes.Contains(Include.Description))
+            entity.Description = _text.Fetch(entity.DescriptionId);
+    }
+}
+```
+
+```cs
+var bare = repository.FetchById(5);                                  // Name/Description left untouched
+var named = repository.FetchById(5, Include.Name);                  // Name resolved
+var full = repository.FetchAll(Include.Name, Include.Description);   // both resolved for every entity
+```
+
+`Include` is an extensible value type. `Include.Name` and `Include.Description` are provided out of the box, but you can declare your own for any other derived value:
+
+```cs
+public static class MyIncludes
+{
+    public static readonly Include Area = new(nameof(Area));
+}
+```
+
+Note that includes populate the entity in place, so if your repository caches its bundle in memory the resolved values will persist on the cached instances. Clone inside `ApplyIncludes` if you need isolation.
