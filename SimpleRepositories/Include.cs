@@ -11,11 +11,7 @@ namespace ToolBX.SimpleRepositories;
 /// </remarks>
 public readonly record struct Include(string Key)
 {
-    /// <summary>A resolved display name (typically populated from a <c>NameId</c>).</summary>
-    public static readonly Include Name = new(nameof(Name));
-
-    /// <summary>A resolved description (typically populated from a <c>DescriptionId</c>).</summary>
-    public static readonly Include Description = new(nameof(Description));
-
     public override string ToString() => Key;
+
+    public static implicit operator Include(string key) => new(key);
 }

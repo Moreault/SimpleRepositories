@@ -58,12 +58,17 @@ var named = repository.FetchById(5, Include.Name);                  // Name reso
 var full = repository.FetchAll(Include.Name, Include.Description);   // both resolved for every entity
 ```
 
-`Include` is an extensible value type. `Include.Name` and `Include.Description` are provided out of the box, but you can declare your own for any other derived value:
+You may add extension properties to `Include`:
 
 ```cs
-public static class MyIncludes
+public static class IncludeExtensions
 {
-    public static readonly Include Area = new(nameof(Area));
+    extension(Include)
+    {
+        public static Include Name => new("Name");
+        public static Include Description => new("Description");
+        public static Include ObjectiveText => new("ObjectiveText");
+    }
 }
 ```
 
