@@ -1,5 +1,3 @@
-using SimpleRepositories.Bundles.Tests.GarbageTypes;
-
 namespace SimpleRepositories.Bundles.Tests;
 
 [TestClass]
@@ -18,7 +16,7 @@ public class ReadOnlyBundleRepositoryTester
             var action = () => Instance[id];
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, typeof(Garbage).GetHumanReadableName(), id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(Garbage), id));
         }
 
         [TestMethod]
@@ -753,7 +751,7 @@ public class ReadOnlyBundleRepositoryTester
             var action = () => Instance.FetchById(id);
 
             //Assert
-            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, typeof(Garbage).GetHumanReadableName(), id));
+            action.Should().Throw<Exception>().WithMessage(string.Format(Exceptions.EntityWithIdNotFound, nameof(Garbage), id));
         }
 
         [TestMethod]
